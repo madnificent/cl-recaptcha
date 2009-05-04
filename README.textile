@@ -1,0 +1,3 @@
+h1. cl-recaptcha
+
+cl-recaptcha is a simple interconnection between recaptcha.net and common-lisp. It can be used for the trivial usage of the recaptcha service.
