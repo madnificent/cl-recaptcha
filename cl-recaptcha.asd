@@ -3,7 +3,7 @@
 
 (in-package :cl-recaptcha.sysdef)
 
-(defsystem :cl-recaptcha.sysdef
+(defsystem :cl-recaptcha
   :name "CL Recaptcha"
   :author "Aad Versteden <madnificent@gmail.com>"
   :version "0"
