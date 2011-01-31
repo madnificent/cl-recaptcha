@@ -34,7 +34,7 @@
   "This is the simplest way.  It combines the script and the noscript version."
   (concatenate 'string (challenge-js public-key) (challenge-ns public-key)))
 
-(defun verify-captcha ( recaptcha-challenge-field recaptcha-response-field remote-ip &key (private-key *private-captcha-key*) )
+(defun verify-captcha (recaptcha-challenge-field recaptcha-response-field remote-ip &key (private-key *private-captcha-key*))
   "Verifies the result the user gave.  There are two values returned.  The first indicates the success or failure, the second indicates the error code the captcha-server gave."
   (let ((response 
 	 (split-sequence #\Newline

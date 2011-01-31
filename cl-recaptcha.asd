@@ -6,7 +6,7 @@
 (defsystem :cl-recaptcha
   :name "CL Recaptcha"
   :author "Aad Versteden <madnificent@gmail.com>"
-  :version "0"
+  :version "1"
   :maintainer "Aad Versteden <madnificent@gmail.com>"
   :licence "MIT"
   :description "Trivial support for the recaptcha service"
