@@ -1,6 +1,6 @@
 (defpackage :cl-recaptcha
   (:use :common-lisp
-        :cl-json
+        :jsown
         :drakma
         :flexi-streams
         :split-sequence)
@@ -27,11 +27,14 @@
           callback
           expired-callback))
 
-(defun challenge-ns (&optional (site-key *site-key*))
+(defun challenge-ns (&key (site-key *site-key*) (theme "light") (callback "") (expired-callback ""))
   "This is the javascript-disabled version of the challenge. Google does not recommend it's use if Javascript is a requirement for your site"
   (format nil
-          "<div class='g-recaptcha' data-sitekey='~a'></div><noscript><div style='width: 302px; height: 352px;'><div style='width: 302px; height: 352px; position: relative;'><div style='width: 302px; height: 352px; position: absolute;'><iframe src='https://www.google.com/recaptcha/api/fallback?k=~a' frameborder='0' scrolling='no' style='width: 302px; height:352px; border-style: none;'></iframe></div><div style='width: 250px; height: 80px; position: absolute; border-style: none; bottom: 21px; left: 25px; margin: 0px; padding: 0px; right: 25px;'> <textarea id='g-recaptcha-response' name='g-recaptcha-response' class='g-recaptcha-response' style='width: 250px; height: 80px; border: 1px solid #c1c1c1; margin: 0px; padding: 0px; resize: none;' value=''></textarea></div></div></div></noscript>"
+          "<div class='g-recaptcha' data-sitekey='~a' data-theme='~a' data-callback='~a' data-expired-callback='~a'></div><noscript><div style='width: 302px; height: 352px;'><div style='width: 302px; height: 352px; position: relative;'><div style='width: 302px; height: 352px; position: absolute;'><iframe src='https://www.google.com/recaptcha/api/fallback?k=~a' frameborder='0' scrolling='no' style='width: 302px; height:352px; border-style: none;'></iframe></div><div style='width: 250px; height: 80px; position: absolute; border-style: none; bottom: 21px; left: 25px; margin: 0px; padding: 0px; right: 25px;'> <textarea id='g-recaptcha-response' name='g-recaptcha-response' class='g-recaptcha-response' style='width: 250px; height: 80px; border: 1px solid #c1c1c1; margin: 0px; padding: 0px; resize: none;' value=''></textarea></div></div></div></noscript>"
           site-key
+          theme
+          callback
+          expired-callback
           site-key))
 
 (defun verify-captcha (g-recaptcha-response &optional (remote-ip) &key (secret-key *secret-key*))
@@ -39,13 +42,12 @@
   (let* ((http-request-parameters (append `(("secret" . ,secret-key)
                                             ("response" . ,g-recaptcha-response))
                                           (if remote-ip
-                                              `("remoteip" . ,remote-ip)
+                                              `(("remoteip" . ,remote-ip))
                                               nil)))
-         (stream (http-request *captcha-verify-url* 
-                               :method :post 
-                               :parameters http-request-parameters
-                               :want-stream t))
-         (response (progn (setf (flexi-stream-external-format stream) :utf-8)
-                          (decode-json stream))))
-    (values (cdr (assoc :success response))
-            (cdr (assoc :error-codes response)))))
+         (response (parse (octets-to-string (http-request *captcha-verify-url* 
+                                                          :method :post 
+                                                          :parameters http-request-parameters)))))
+    (values (val response "success")
+            (if (not (val response "success"))
+                (val response "error-codes")
+                'nil))))
