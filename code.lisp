@@ -2,8 +2,7 @@
   (:use :common-lisp
         :jsown
         :drakma
-        :flexi-streams
-        :split-sequence)
+        :flexi-streams)
   (:export :*secret-key*
            :*site-key*
            :*recaptcha-header-script-tag*
