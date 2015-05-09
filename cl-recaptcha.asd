@@ -11,6 +11,7 @@
   :licence "MIT"
   :description "Trivial support for the recaptcha service"
   :depends-on (:drakma
-	       :split-sequence
-	       :cl-ppcre)
+               :cl-ppcre
+               :flexi-streams
+               :jsown)
   :components ((:file "code")))
